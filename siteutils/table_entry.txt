@@ -1,0 +1,5 @@
+<tr class="&css_class&">
+    <td>&card_type&</td>
+    <td>&card_name&</td>
+    <td>&card_status&</td>
+</tr>

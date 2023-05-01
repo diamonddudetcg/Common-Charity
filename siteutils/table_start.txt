@@ -1,0 +1,6 @@
+<table class="cardlist centertable" align="center">
+	<tr align="center" class="cardlist_atitle">
+	  <td width="180" height="40"><strong>Card Type</strong></td>
+	  <td width="600"><strong>Card Name</strong></td>
+	  <td width="120" align="center"><strong>Status</strong></td>
+	</tr>
