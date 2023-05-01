@@ -3,7 +3,7 @@ from card import Card
 import constants
 from io import TextIOWrapper
 
-site = "site/index.html"
+site = "docs/index.html"
 header = "siteutils/header.txt"
 footer = "siteutils/footer.txt"
 table_start = "siteutils/table_start.txt"

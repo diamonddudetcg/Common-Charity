@@ -19,7 +19,7 @@ banlist_url = "https://api.ygoprog.com/api/banlist/public/%s"
 cards_url = "https://api.ygoprog.com/api/cards"
 printings_url = "https://api.ygoprog.com/api/cards/printings"
 banlist_label = "Tcg"
-lflist_file = "site/lflist/common_charity.lflist.conf"
+lflist_file = "docs/lflist/common_charity.lflist.conf"
 
 def generateCardList():
 	request = requests.Request(common_banlists_url, None, header)
