@@ -1,7 +1,7 @@
 <html lang="en-US">
 <head>
 	<title>Common Charity Forbidden & Limited list</title>
-	<link rel='stylesheet' id='yugioh-style-patch-css'  href='yugioh.css' type='text/css' media='all' />
+	<link rel='stylesheet' id='yugioh-style-patch-css'  href='docs/yugioh.css' type='text/css' media='all' />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 </head>
 <style>
@@ -23,7 +23,7 @@ table{
 <h1>Common Charity</h1>
 <h2>Konami's officially sanctioned Commons-only format</h2>
 
-<a href="lflist/common_charity.lflist.conf" download="cc">You can find the EDOPRO banlist here</a>. Right click the link and select "Save as..."
+<a href="docs/lflist/common_charity.lflist.conf" download="cc">You can find the EDOPRO banlist here</a>. Right click the link and select "Save as..."
 
 </br></br>
 The banlist file goes into the lflists folder in your EDOPRO installation folder. Assuming you use Windows, it usually is C:/ProjectIgnis/lflists
