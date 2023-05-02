@@ -22,11 +22,13 @@ banlist_label = "Tcg"
 lflist_file = "docs/lflist/common_charity.lflist.conf"
 
 def generateCardList():
+	print("Getting common banlists...", flush=True)
 	request = requests.Request(common_banlists_url, None, header)
 	with requests.urlopen(request) as response:
 		banlists = json.loads(response.read().decode())
 		advanced_id = next(obj for obj in banlists if obj['format'] == 'Tcg')['_id']
 
+	print("Getting Advanced banlist...", flush=True)
 	request = requests.Request(banlist_url % advanced_id, None, header)
 	with requests.urlopen(request) as response:
 		data = json.loads(response.read().decode())
@@ -34,15 +36,18 @@ def generateCardList():
 		limited = data['limited']
 		semi = data['semi_limited']
 
+	print("Getting list of all cards...", flush=True)
 	request = requests.Request(cards_url, None, header)
 	with requests.urlopen(request) as response:
 		cards = json.loads(response.read().decode())
 
+	print("Getting printing data...", flush=True)
 	request = requests.Request(printings_url, None, header)
 	with requests.urlopen(request) as response:
 		result = json.loads(response.read().decode())
 		common_ids = list({card['card_id'] for card in result if card['set_rarity_code'] == 'C'})	
 	
+	print("Calculating legality...", flush=True)
 	all_cards: List[Card] = []
 	for card in cards:
 		id = card['id']
@@ -81,7 +86,6 @@ def generateCardList():
 				card_type = constants.CARD_TYPE_EFFECT_MONSTER
 
 		all_cards.append(Card(name, id, status, card_type))
-
 
 	return all_cards
 
