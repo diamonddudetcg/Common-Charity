@@ -53,12 +53,15 @@ def writeCard(card:Card, outfile:TextIOWrapper):
 	type = card.type
 	name = card.name
 	status = card.status
+	id = str(card.id)
+	while(len(id)<8):
+		id = "0%s"%id
 	css_class = getCssClassFromType(type)
 	type_label = getLabelFromType(type)
 	name_label = name.upper()
 	status_label = getLabelFromStatus(status)
 
-	entry = entry.replace("&css_class&", css_class).replace("&card_type&", type_label).replace("&card_name&", name_label).replace("&card_status&", status_label)
+	entry = entry.replace("&css_class&", css_class).replace("&card_type&", type_label).replace("&card_name&", name_label).replace("&card_status&", status_label).replace("&card_id&", id)
 	outfile.write(entry)
 
 def getCssClassFromType(type:int):

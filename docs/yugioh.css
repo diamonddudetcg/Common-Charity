@@ -4,6 +4,15 @@
 	padding-right:5px;
 	margin-top:50px;
 }
+.cardlist a:link{
+	color: #000000;
+}
+.cardlist a:visited{
+	color: grey;
+}
+.cardlist_xyz a:link{
+	color: #FFFFFF
+}
 .cardlist_atitle td { 
 	color: #000000;
 	font-size: 18px;
