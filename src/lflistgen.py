@@ -1,4 +1,5 @@
 import urllib.request as requests
+from alias import Alias
 import json
 from typing import List
 from card import Card
@@ -21,6 +22,8 @@ printings_url = "https://api.ygoprog.com/api/cards/printings"
 banlist_label = "Tcg"
 lflist_file = "docs/lflist/common_charity.lflist.conf"
 
+vanilla_tuners = ["Dragon Core Hexer", "Labradorite Dragon", "Ally Mind", "Angel Trumpeter", "Magicalibra", "Tune Warrior", "Genex Controller", "Hallohallo", "Galaxy Serpent", "Guardragon Justicia", "Water Spirit", "Flamvell Guard"]
+
 def generateCardList():
 	print("Getting common banlists...", flush=True)
 	request = requests.Request(common_banlists_url, None, header)
@@ -39,32 +42,48 @@ def generateCardList():
 	print("Getting list of all cards...", flush=True)
 	request = requests.Request(cards_url, None, header)
 	with requests.urlopen(request) as response:
-		cards = json.loads(response.read().decode())
+		cards: List = json.loads(response.read().decode())
+		common_ids = [card['id'] for card in cards if any(card_set["set_rarity_code"] == "C" for card_set in card["card_sets"])]
 
-	print("Getting printing data...", flush=True)
-	request = requests.Request(printings_url, None, header)
-	with requests.urlopen(request) as response:
-		result = json.loads(response.read().decode())
-		common_ids = list({card['card_id'] for card in result if card['set_rarity_code'] == 'C'})	
+	if not 38356857 in common_ids:
+		grimness = {}
+		grimness['id'] = 38356857
+		grimness['name'] = "Gishki Grimness"
+		grimness['type'] = "Monster"
+		grimness['subtype'] = ["Fish", "Effect"]
+		cards.append(grimness)
+		common_ids.append(grimness['id'])
+	else:
+		print("Grimness has been added to the database, you can finally remove this part of the code", flush=True)
 	
 	print("Calculating legality...", flush=True)
 	all_cards: List[Card] = []
+	alias = Alias()
 	for card in cards:
 		id = card['id']
+		ids = alias.get_list(id)
 		type = card['type']
 		subtype = card['subtype']
 		name = card['name']
-		if not type in ['Skill', 'Token']:
-			status = -1
-			if id in common_ids:
-				if id in forbidden:
+
+		isCommon = False
+		for card_id in ids:
+			if card_id in common_ids:
+				isCommon = True
+		status = -1
+		if not type in ['Skill', 'Token'] and isCommon:
+			for card_id in ids:
+				if card_id in forbidden:
 					status = 0
-				elif id in limited:
+					break
+				elif card_id in limited:
 					status = 1
-				elif id in semi:
+					break
+				elif card_id in semi:
 					status = 2
-				else:
-					status = 3
+					break
+			if status == -1:
+				status = 3
 		if type == "Spell":
 			card_type = constants.CARD_TYPE_SPELL
 		elif type == "Trap":
@@ -84,6 +103,19 @@ def generateCardList():
 				card_type = constants.CARD_TYPE_LINK_MONSTER
 			elif "Effect" in subtype:
 				card_type = constants.CARD_TYPE_EFFECT_MONSTER
+			elif "Spirit" in subtype:
+				card_type = constants.CARD_TYPE_EFFECT_MONSTER
+			elif "Gemini" in subtype:
+				card_type = constants.CARD_TYPE_EFFECT_MONSTER
+			elif "Union" in subtype:
+				card_type = constants.CARD_TYPE_EFFECT_MONSTER
+			elif "Tuner" in subtype:
+				if name in vanilla_tuners:
+					card_type = constants.CARD_TYPE_NORMAL_MONSTER
+				card_type = constants.CARD_TYPE_EFFECT_MONSTER
+			else:
+				card_type = constants.CARD_TYPE_NORMAL_MONSTER
+				
 
 		all_cards.append(Card(name, id, status, card_type))
 
@@ -93,5 +125,5 @@ def generateBanlist(cards: List[Card]):
 	with open(lflist_file, 'w', encoding="utf-8") as outfile:
 		outfile.write("#[Common Charity Format]\n")
 		outfile.write("!Common Charity %s.%s\n\n" % (datetime.now().month, datetime.now().year))
-		for card in sorted(cards, key=lambda x: x.name.lower()):
+		for card in sorted(cards, key=lambda x: x.id):
 			outfile.write("%d %d -- %s\n"%(card.id, card.status, card.name))

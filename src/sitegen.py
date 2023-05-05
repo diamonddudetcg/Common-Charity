@@ -13,10 +13,10 @@ table_entry = "siteutils/table_entry.txt"
 cardUrl = "https://db.ygoprodeck.com/card/?search=%s"
 
 
-def generateSite(cards: List[Card]):
+def generateSite(cards: List[Card], diff: List[int]):
 	outfile = open(site, "w", encoding="utf-8")
 	writeHeader(outfile)
-	writeAllCards(cards, outfile)
+	writeAllCards(cards, diff, outfile)
 	writeFooter(outfile)
     
 
@@ -29,26 +29,30 @@ def writeFooter(outfile:TextIOWrapper):
 	outfile.write(footerText)
 
 
-def writeAllCards(cards:List[Card], outfile: TextIOWrapper):
+def writeAllCards(cards:List[Card], diff:List[int], outfile: TextIOWrapper):
 	for status in [-1, 0, 1, 2]:
 		section = [card for card in cards if card.status == status]
-		writeSection(section, outfile)
+		writeSection(section, diff, outfile)
+	
+	unlim = [card for card in cards if card.status == 3 and card.id in diff]
+	if len(unlim) > 0:
+		writeSection(unlim, diff, outfile)
 
 
-def writeSection(cards:List[Card], outfile:TextIOWrapper):
+def writeSection(cards:List[Card], diff:List[int], outfile:TextIOWrapper):
 	outfile.write(open(table_start).read())
 
-	for section in [constants.CARD_TYPE_NORMAL_MONSTER, constants.CARD_TYPE_EFFECT_MONSTER, constants.CARD_TYPE_RITUAL_MONSTER,constants.CARD_TYPE_FUSION_MONSTER, constants.CARD_TYPE_LINK_MONSTER, constants.CARD_TYPE_SYNCHRO_MONSTER, constants.CARD_TYPE_XYZ_MONSTER, constants.CARD_TYPE_SPELL,constants.CARD_TYPE_TRAP]:
+	for section in [0, constants.CARD_TYPE_NORMAL_MONSTER, constants.CARD_TYPE_EFFECT_MONSTER, constants.CARD_TYPE_RITUAL_MONSTER,constants.CARD_TYPE_FUSION_MONSTER, constants.CARD_TYPE_LINK_MONSTER, constants.CARD_TYPE_SYNCHRO_MONSTER, constants.CARD_TYPE_XYZ_MONSTER, constants.CARD_TYPE_SPELL,constants.CARD_TYPE_TRAP]:
 		subsection = [card for card in cards if card.type == section]
-		writeSubSection(subsection, outfile)
+		writeSubSection(subsection, diff, outfile)
 
 	outfile.write(open(table_end).read())
 
-def writeSubSection(cards:List[Card], outfile:TextIOWrapper):
-	for card in cards:
-		writeCard(card, outfile)
+def writeSubSection(cards:List[Card], diff:List[int], outfile:TextIOWrapper):
+	for card in sorted(cards, key=lambda x: x.name.lower()):
+		writeCard(card, diff, outfile)
 
-def writeCard(card:Card, outfile:TextIOWrapper):
+def writeCard(card:Card, diff:List[int], outfile:TextIOWrapper):
 	entry = open(table_entry).read()
 	type = card.type
 	name = card.name
@@ -62,6 +66,10 @@ def writeCard(card:Card, outfile:TextIOWrapper):
 	status_label = getLabelFromStatus(status)
 
 	entry = entry.replace("&css_class&", css_class).replace("&card_type&", type_label).replace("&card_name&", name_label).replace("&card_status&", status_label).replace("&card_id&", id)
+	if card.id in diff:
+		entry = entry.replace("&new&", "NEW")
+	else:
+		entry = entry.replace("&new&", "")
 	outfile.write(entry)
 
 def getCssClassFromType(type:int):
