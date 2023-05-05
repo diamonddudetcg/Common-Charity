@@ -61,7 +61,7 @@ def generateCardList():
 	alias = Alias()
 	for card in cards:
 		id = card['id']
-		ids = alias.get_list(id)
+		ids = alias.getIds(id)
 		type = card['type']
 		subtype = card['subtype']
 		name = card['name']
@@ -116,8 +116,8 @@ def generateCardList():
 			else:
 				card_type = constants.CARD_TYPE_NORMAL_MONSTER
 				
-
-		all_cards.append(Card(name, id, status, card_type))
+		
+		all_cards.append(Card(name, id, ids, status, card_type))
 
 	return all_cards
 
@@ -125,5 +125,6 @@ def generateBanlist(cards: List[Card]):
 	with open(lflist_file, 'w', encoding="utf-8") as outfile:
 		outfile.write("#[Common Charity Format]\n")
 		outfile.write("!Common Charity %s.%s\n\n" % (datetime.now().month, datetime.now().year))
-		for card in sorted(cards, key=lambda x: x.id):
-			outfile.write("%d %d -- %s\n"%(card.id, card.status, card.name))
+		for card in sorted(cards, key=lambda x: x.name.lower()):
+			for id in card.ids:
+				outfile.write("%d %d -- %s\n"%(id, card.status, card.name))
