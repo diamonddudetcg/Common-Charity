@@ -66,11 +66,13 @@ def generateCardList():
 		subtype = card['subtype']
 		name = card['name']
 
+		status = -1
 		isCommon = False
 		for card_id in ids:
 			if card_id in common_ids:
 				isCommon = True
-		status = -1
+				status = 3
+		
 		if not type in ['Skill', 'Token'] and isCommon:
 			for card_id in ids:
 				if card_id in forbidden:
@@ -116,7 +118,6 @@ def generateCardList():
 			else:
 				card_type = constants.CARD_TYPE_NORMAL_MONSTER
 				
-		
 		all_cards.append(Card(name, id, ids, status, card_type))
 
 	return all_cards
